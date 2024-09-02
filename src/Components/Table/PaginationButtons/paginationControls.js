@@ -5,37 +5,37 @@ import { useSearchParams } from "next/navigation";
 export default function ShowParams({ theme }) {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const startOffset = searchParams.get('startOffset') ?? 0;
-    const endOffset = searchParams.get('endOffset') ?? 1;
+    const startOffset = Number(searchParams.get('startOffset') ?? 0);
+    const endOffset = Number(searchParams.get('endOffset') ?? 1);
     console.log(typeof startOffset, +startOffset - 1 || 0)
     const prev = () => {
-        router.push(`/?startOffset=${+startOffset - 1 >= 0 ? +startOffset - 1 : 0}&endOffset=${+endOffset - 1 >= 1 ? +endOffset - 1 : 1}`)
+        router.push(`/?startOffset=${startOffset - 1 >= 0 ? startOffset - 1 : 0}&endOffset=${endOffset - 1 >= 1 ? endOffset - 1 : 1}`)
     }
     const next = () => {
-        router.push(`/?startOffset=${+startOffset + 1}&endOffset=${+endOffset + 1}`)
+        router.push(`/?startOffset=${startOffset + 1}&endOffset=${endOffset + 1}`)
     }
-    const getButtonValueNumbers = setActiveButtonPosition(+endOffset);
-    const [first, second, third] = getButtonValueNumbers;
-    console.log(typeof first, typeof second, typeof third)
-    console.log(14 === +endOffset)
+    const buttonValueNumbers = setButtonPosition(endOffset);
+    const [first, second, third] = buttonValueNumbers;
+    const [firstClass, secondClass, thirdClass] = setClassButtons(buttonValueNumbers, endOffset, theme);
+ 
     return (
         <>
             <button onClick={ prev }>Prev</button>
             <button
-                className={ `${theme === 'light' ? 'bg-button-grey' : 'bg-button-dark'} flex justify-center items-center text-sm w-[31px] h-[31px]` }>
-                <span className={`${theme === 'light' ? 'text-black' : 'text-light'}`}>
+                className={ `flex justify-center items-center text-sm w-[31px] h-[31px] ${firstClass}` }>
+                <span className={`${theme === 'light' && first !== endOffset ? 'text-black' : 'text-light'}`}>
                     { first }
                 </span>
             </button>
             <button
-                className={`${theme === 'light' ? 'bg-button-grey' : 'bg-button-dark'} flex justify-center items-center text-sm w-[31px] h-[31px]` }>
-                <span className={`${theme === 'light' ? 'text-black' : 'text-light'}`}> 
+                className={`flex justify-center items-center text-sm w-[31px] h-[31px] ${secondClass}` }>
+                <span className={`${theme === 'light' && second !== endOffset ? 'text-black' : 'text-light'}`}> 
                     { second }
                 </span>
             </button>
             <button
-                className={`${theme === 'light' ? 'bg-button-grey' : 'bg-button-dark'} flex justify-center items-center text-sm w-[31px] h-[31px]` }>
-                <span className={`${theme === 'light' ? 'text-black' : 'text-light'}`}>
+                className={`flex justify-center items-center text-sm w-[31px] h-[31px] ${thirdClass}`}>
+                <span className={`${theme === 'light' && third !== endOffset ? 'text-black' : 'text-light'}`}>
                     { third }
                 </span>
             </button>
@@ -43,7 +43,7 @@ export default function ShowParams({ theme }) {
         </>
     )
 }
-function setActiveButtonPosition(activeButtonValue) {
+function setButtonPosition(activeButtonValue) {
     if (!(activeButtonValue % 3)) {
         return [activeButtonValue - 2, activeButtonValue - 1, activeButtonValue];
     } else if (!((activeButtonValue + 1) % 3)) {
@@ -54,7 +54,7 @@ function setActiveButtonPosition(activeButtonValue) {
 
 function setClassButtons(getButtonValueNumbers, activeElement,theme) {
     return getButtonValueNumbers.map((numberValueButton) => {
-        if (numberValueButton === +activeElement) {
+        if (numberValueButton === activeElement) {
             return 'bg-active-button';
         } else { 
            return theme === 'light'
@@ -69,7 +69,7 @@ function setClassButtons(getButtonValueNumbers, activeElement,theme) {
 
 // className={ `
 //     ${
-//         second === +endOffset
+//         second === endOffset
 //     ?
 //     'bg-active-button'
 //     :

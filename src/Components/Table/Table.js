@@ -10,7 +10,7 @@ import ShowParams from "@/Components/Table/PaginationButtons/paginationControls"
 
 
 export default function Table({ users }) {
-    const [theme, setTheme] = useState('dark')
+    const [theme, setTheme] = useState('light')
     const searchParams = useSearchParams();
     const startOffset = searchParams.get('startOffset') ?? 0;
     const endOffset = searchParams.get('endOffset') ?? 1;
@@ -29,6 +29,7 @@ export default function Table({ users }) {
     const getData = async () => {
         const resp = await fetch(`http://localhost:5000/users?_start=${start}&_end=${end}`);
         const data = await resp.json();
+        
         setRenderData(data)
         // console.log(data)
     }
