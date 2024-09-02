@@ -25,7 +25,8 @@ module.exports = {
         "light-orange": "rgba(254, 242, 229, 1)",
         "active-button": "rgba(98, 77, 227, 1)",
         "button-dark":"rgba(20, 20, 50, 1)",
-        "button-grey":"rgba(224, 224, 224, 1)",
+        "button-grey": "rgba(224, 224, 224, 1)",
+        "grey-toggle":"rgba(158, 158, 158, 1)", 
       },
       fontFamily: {
         'montserrat': ['Montserrat', 'sans-serif'],

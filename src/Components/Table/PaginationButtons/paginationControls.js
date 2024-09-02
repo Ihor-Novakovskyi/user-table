@@ -2,16 +2,23 @@
 import { useRouter } from "next/router";
 import { useSearchParams } from "next/navigation";
 
-export default function ShowParams({ theme }) {
+export default function Pagination({ theme, isLimited, reloadLimit }) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const startOffset = Number(searchParams.get('startOffset') ?? 0);
     const endOffset = Number(searchParams.get('endOffset') ?? 1);
-    console.log(typeof startOffset, +startOffset - 1 || 0)
-    const prev = () => {
+    const setSlide = (e) => { 
+        const buttonValue = Number(e.currentTarget.children[0].innerText);
+        if (buttonValue !== endOffset) { 
+            isLimited ? reloadLimit(false) : void 0;
+            router.push(`/?startOffset=${buttonValue - 1}&endOffset=${buttonValue}`)
+        }
+    }
+    const prevSlide = () => {
+        isLimited ? reloadLimit(false) : void 0;
         router.push(`/?startOffset=${startOffset - 1 >= 0 ? startOffset - 1 : 0}&endOffset=${endOffset - 1 >= 1 ? endOffset - 1 : 1}`)
     }
-    const next = () => {
+    const nextSlide = () => {
         router.push(`/?startOffset=${startOffset + 1}&endOffset=${endOffset + 1}`)
     }
     const buttonValueNumbers = setButtonPosition(endOffset);
@@ -20,26 +27,40 @@ export default function ShowParams({ theme }) {
  
     return (
         <>
-            <button onClick={ prev }>Prev</button>
             <button
-                className={ `flex justify-center items-center text-sm w-[31px] h-[31px] ${firstClass}` }>
+                onClick={ prevSlide }
+                className={`text-sm ${theme === 'light' ? 'text-grey-toggle' : 'text-light'}`}
+            >
+                Prev
+            </button>
+            <button
+                onClick={setSlide}
+                className={ `flex justify-center items-center text-sm w-[31px] h-[31px] rounded-[8px] ${firstClass}` }>
                 <span className={`${theme === 'light' && first !== endOffset ? 'text-black' : 'text-light'}`}>
                     { first }
                 </span>
             </button>
             <button
-                className={`flex justify-center items-center text-sm w-[31px] h-[31px] ${secondClass}` }>
+                onClick={setSlide}
+                className={`flex justify-center items-center text-sm w-[31px] h-[31px] rounded-[8px] ${secondClass}` }>
                 <span className={`${theme === 'light' && second !== endOffset ? 'text-black' : 'text-light'}`}> 
                     { second }
                 </span>
             </button>
             <button
-                className={`flex justify-center items-center text-sm w-[31px] h-[31px] ${thirdClass}`}>
-                <span className={`${theme === 'light' && third !== endOffset ? 'text-black' : 'text-light'}`}>
+                onClick={setSlide}
+                className={ `flex justify-center items-center text-sm w-[31px] h-[31px] rounded-[8px] ${thirdClass}` }>
+                <span className={`$ ${theme === 'light' && third !== endOffset ? 'text-black' : 'text-light'}`}>
                     { third }
                 </span>
             </button>
-            <button onClick={ next }>Next</button>
+            <button
+                onClick={ nextSlide }
+                disabled={ isLimited }
+                className={`text-sm ${theme === 'light' ? 'text-grey-toggle' : 'text-light'}`}
+            >
+                Next
+            </button>
         </>
     )
 }
@@ -67,16 +88,3 @@ function setClassButtons(getButtonValueNumbers, activeElement,theme) {
     })
 }
 
-// className={ `
-//     ${
-//         second === endOffset
-//     ?
-//     'bg-active-button'
-//     :
-//     theme === 'light'
-//         ?
-//         'bg-button-grey'
-//         :
-//         'bg-button-dark'
-//     }
-//     flex justify-center items-center text-sm w-[31px] h-[31px]` }

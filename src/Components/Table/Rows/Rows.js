@@ -1,17 +1,15 @@
 import React from "react";
-export default function Rows({ users, theme }) {
-    console.log(theme)
+export default function Rows({ users, theme, deleteItem }) {
     return (
         <>
-            { users.map((user) => Row(user, theme)) }
+            { users.map((user) => Row(user, theme, deleteItem)) }
         </>
     )
 }
 
-function Row(user, theme) {
-    console.log(theme)
+function Row(user, theme,deleteItem) {
     const {
-        "Tracking ID": id,
+        id,
         "Product Image": img,
         "Product Name": productName,
         "Customer": customer,
@@ -21,7 +19,7 @@ function Row(user, theme) {
         "Status": status,
     } = user;
     return (
-        <tr className={`${theme === "light" ? "odd:bg-light-grey" : "odd:bg-light-dark"} text-base align-middle text-left`}>
+        <tr key={id} className={`${theme === "light" ? "odd:bg-light-grey" : "odd:bg-light-dark"} ${theme === 'light' ? '' : 'text-light'} text-base align-middle text-left`}>
             <td className="pl-[16px] pr-[0px] text-center py-[16px]">{ `#${id}` }</td>
             <td className="pl-[16px] pr-[0px] py-[16px]">
                 <div className="flex gap-[8px] items-center">
@@ -49,7 +47,7 @@ function Row(user, theme) {
             <td className="pl-[16px] pr-[0px] py-[16px]">
                 <div className="flex gap-[16px] justify-center">
                     <img className="w-[24px] h-[24px]"src="./edit.png" alt="edit" />
-                    <img className="w-[24px] h-[24px]" src="./trash.png" alt="edit" />
+                    <img onClick={() => deleteItem(id)} className="w-[24px] h-[24px]" src="./trash.png" alt="edit" />
                 </div>
             </td>
         </tr>
@@ -57,7 +55,6 @@ function Row(user, theme) {
 }
 
 function IndicatorProcess({ status }) {
-    console.log(status)
     return {
         delivered: <Delivered />,
         process: <Process />,
