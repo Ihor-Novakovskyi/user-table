@@ -10,7 +10,7 @@ import ShowParams from "@/Components/Table/PaginationButtons/paginationControls"
 
 
 export default function Table({ users }) {
-    const [theme, setTheme] = useState('light')
+    const [theme, setTheme] = useState('dark')
     const searchParams = useSearchParams();
     const startOffset = searchParams.get('startOffset') ?? 0;
     const endOffset = searchParams.get('endOffset') ?? 1;
@@ -35,14 +35,16 @@ export default function Table({ users }) {
     useEffect(() => {
         getData();
     }, [startOffset])
+
     return (
         // тут нужно попробовать сделать падинг вместо border-spacing-x-[16px]
-        <section className={`bg-${theme ? 'light' : 'light'} w-[1110px] border-red-200`}>
-            <table class="w-[100%] table-auto border-spacing-x-[16px] border-separate ">
+        <section className={ `flex-row justify-center ${theme === 'light' ? 'bg-light' : 'bg-dark'} w-[1110px]` }>
+            <div className="grow">
+            <table class=" w-[100%] table-auto">
                 <thead>
                     <tr className="text-left">
-                        <th className="text-center py-[16px]" scope="col">Tracking ID</th>
-                        <th className="py-[16px]" scope="col">
+                        <th className="text-center w-[136px] pl-[16px] pr-[0px] py-[16px]" scope="col">Tracking ID</th>
+                        <th className="py-[16px] pl-[16px] pr-[0px] " scope="col">
                             <div className="flex justify-between items-center">
                                 <span>
                                     Product
@@ -50,7 +52,7 @@ export default function Table({ users }) {
                                 <img className="w-[16px] h-[16px]" src="/bxs_sort-alt.svg" alt="sort" />
                             </div>
                         </th>
-                        <th className="py-[16px]" scope="col">
+                        <th className="pl-[16px] pr-[0px] py-[16px]" scope="col">
                             <div className="flex justify-between items-center">
                                 <span>
                                     Customer
@@ -58,7 +60,7 @@ export default function Table({ users }) {
                                 <img className="w-[16px] h-[16px]" src="/bxs_sort-alt.svg" alt="sort" />
                             </div>
                         </th>
-                        <th className="py-[16px]" scope="col">
+                        <th className="pl-[16px] pr-[0px]  py-[16px]" scope="col">
                             <div className="flex justify-between items-center">
                                 <span>
                                     Date
@@ -66,27 +68,31 @@ export default function Table({ users }) {
                                 <img className="w-[16px] h-[16px]" src="/bxs_sort-alt.svg" alt="sort" />
                             </div>
                         </th>
-                        <th className="py-[16px]" scope="col">Amount</th>
-                        <th className="py-[16px]" scope="col">Payment Mode</th>
-                        <th className="py-[16px]" scope="col">
+                        <th className="pl-[16px] pr-[0px] py-[16px]" scope="col">Amount</th>
+                        <th className="pl-[16px] pr-[0px] py-[16px]" scope="col">Payment Mode</th>
+                        <th className="pl-[16px] pr-[0px] py-[16px]" scope="col">
                             <div className="flex justify-between items-center">
                                 <span>
                                     Status
                                 </span>
                                 <img className="w-[16px] h-[16px]" src="/bxs_sort-alt.svg" alt="sort" />
                             </div>                        </th>
-                        <th className="text-center py-[16px]" scope="col">Action</th>
+                        <th className="text-center w-[136px] pl-[16px] pr-[0px]  py-[16px]" scope="col">Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <Rows users={renderData} />
+                    <Rows users={ renderData } theme={theme} />
                 </tbody>
 
             </table>
+            </div>
+           
 
             {/* <h1 className="text-center py-10 px-12">Hi Ihor</h1> */ }
             {/* { renderData.slice(0, 5).map((el,id) => <span key={id} className="text-green">{el.Customer}</span>)} */ }
-            <ShowParams />
+            <div className="flex justify-center gap-[12px]">
+                <ShowParams theme={theme} />
+            </div>
         </section>
 
     )
