@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
-export default function userDataHook({users}) { 
+export default function userDataHook({ users }) {
     const [isLimited, setLimited] = useState(false);
     const searchParams = useSearchParams();
     let startOffset = Number(searchParams.get('startOffset') ?? 0);
@@ -14,17 +14,17 @@ export default function userDataHook({users}) {
     let end = endOffset * quantityElementToShow;
     const renderUserInfo = filter === 'all' ? users.slice(start, end) : createFilteredUserSlice(users);
     const [renderData, setRenderData] = useState(renderUserInfo);
-    useEffect(() => { 
-        getFilteredItems();
-    },[filter,startOffset])
     useEffect(() => {
-        if (filter === 'all') { 
+        getFilteredItems();
+    }, [filter, startOffset])
+    useEffect(() => {
+        if (filter === 'all') {
             getAllUsersByOffset();
         }
     }, [startOffset])
 
 
-    function createFilteredUserSlice(users) { 
+    function createFilteredUserSlice(users) {
         let filtered = users.filter(filterUsersByFilterValue);
         if (filtered.length > start && filtered.length >= end) {
             filtered = filtered.slice(start, end);
@@ -42,22 +42,22 @@ export default function userDataHook({users}) {
     // if (filter !== 'all' && !renderData.length && startOffset >= 1) { 
     //     router.push(`/?startOffset=${startOffset - 1}&endOffset=${endOffset - 1}&filter=${filter}`);
     // }
-    if (!renderData.length && startOffset >= 1) { 
+    if (!renderData.length && startOffset >= 1) {
         router.push(`/?startOffset=${startOffset - 1}&endOffset=${endOffset - 1}&filter=${filter}`);
     }
-    function filterUsersByFilterValue(user) { 
+    function filterUsersByFilterValue(user) {
         const { "Customer": userName } = user;
         const [firstName, secondName] = userName.split(' ');
         return firstName.toLowerCase().startsWith(filter) || secondName.toLowerCase().startsWith(filter);
 
     }
     const getAllUsersByOffset = async () => {
-        if (!isLimited) {            
+        if (!isLimited) {
             const resp = await fetch(`http://localhost:5000/users?_start=${start}&_end=${end}`);
             const data = await resp.json();
             if (data.length) {
                 setRenderData(data);
-                if (data.length < quantityElementToShow) { 
+                if (data.length < quantityElementToShow) {
                     setLimited(true);
                 }
                 return;
@@ -77,20 +77,20 @@ export default function userDataHook({users}) {
             setRenderData(data);
         }
     }
-    const getFilteredItems = async () => { 
-        console.log('wrok')
-        if (filter !== 'all') { 
+    const getFilteredItems = async () => {
+
+        if (filter !== 'all') {
             const resp = await fetch('http://localhost:5000/users');
             const data = await resp.json();
             const filteredUsers = createFilteredUserSlice(data);
             setRenderData(filteredUsers)
-            if (filteredUsers.length < quantityElementToShow) { 
+            if (filteredUsers.length < quantityElementToShow) {
                 setLimited(true);
             }
         }
-    } 
- 
-    function setFilterValue(e) { 
+    }
+
+    function setFilterValue(e) {
         const value = e.currentTarget.value.toLowerCase();
         setLimited(false);
         if (value.length) {
@@ -99,7 +99,7 @@ export default function userDataHook({users}) {
             router.push(`/?startOffset=0&endOffset=1&filter=all`)
         }
     }
-    console.log('isLimited', isLimited)
+
     return {
         filter,
         setFilterValue,

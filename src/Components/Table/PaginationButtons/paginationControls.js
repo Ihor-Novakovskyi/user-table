@@ -10,8 +10,6 @@ export default function Pagination({ theme, isLimited, reloadLimit }) {
     const filter = searchParams.get('filter') ?? 'all';
     const setSlide = (e) => { 
         const buttonValue = Number(e.currentTarget.children[0].innerText);
-        console.log('button value > endOfset', buttonValue >= endOffset,'buttonValue >= endOffset && isLimited',buttonValue >= endOffset && isLimited)
-        console.log(isLimited)
         if (buttonValue >= endOffset && isLimited) {
             return;
         } else { 

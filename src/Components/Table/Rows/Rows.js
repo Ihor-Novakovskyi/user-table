@@ -33,7 +33,7 @@ function Row(user, theme,deleteItem) {
                 { customer }
             </td>
             <td className="pl-[16px] pr-[0px] py-[16px]">
-                { date }
+                { date.split('-').reverse().join('/') }
             </td>
             <td className="pl-[16px] pr-[0px] py-[16px]">
                 { amount }
