@@ -19,7 +19,7 @@ export default function Table({ users }) {
     const filterDefault = (searchParams.get('filter') ?? 'all').toLowerCase();
     
     const [filter, setFilter] = useState(filterDefault);
-    console.log(filter)
+    console.log('filter',filter)
     const router = useRouter();
     console.log('render', startOffset, endOffset)
 
@@ -27,37 +27,34 @@ export default function Table({ users }) {
     const quantityElementToShow = 10;
     let start = startOffset * quantityElementToShow;
     let end = endOffset * quantityElementToShow;
-    const defaultData = filterDefault === 'all' ? users : users.filter(filterData);
-    let renderUserInfo = filterDefault === 'all' ? defaultData.slice(start, end) : defaultData;
-    if (filterDefault !== 'all') {
-        console.log('no all')
-        console.log(renderUserInfo.length > start, renderUserInfo.length >= end)
-        if (renderUserInfo.length > start && renderUserInfo.length >= end) {
-            console.log("renderUserInfo", renderUserInfo)
-            renderUserInfo = renderUserInfo.slice(start, end);
-        } else if (renderUserInfo.length > start) {
-            renderUserInfo = renderUserInfo.slice(start, renderUserInfo.length)
-            console.log(renderUserInfo);
-            // setElementsIsEnd(false);
+    const renderUserInfo = filterDefault === 'all' ? users.slice(start, end) : createFilteredUser(users);
+    const [renderData, setRenderData] = useState(renderUserInfo);
+    console.log('renderData',renderData)
+    function createFilteredUser(users) { 
+        let filtered = users.filter(filterData);
+        if (filtered.length > start && filtered.length >= end) {
+            filtered = filtered.slice(start, end);
+        } else if (filtered.length > start) {
+            filtered = filtered.slice(start, filtered.length)
         } else { 
             if (startOffset >= 1) {
                 router.push(`/?startOffset=${startOffset - 1}&endOffset=${endOffset - 1}&filter=${filter}`);
             }
         }
+        console.log('filtered',filtered)
+        return filtered;
     }
-    console.log()
-    const [renderData, setRenderData] = useState(renderUserInfo)
+
     function filterData(user) { 
         const { "Customer": userName } = user;
-        const [firstName, secondName] = userName;
-        console.log(secondName.toLowerCase().startsWith(filter))
+        const [firstName, secondName] = userName.split(' ');
         return firstName.toLowerCase().startsWith(filter) || secondName.toLowerCase().startsWith(filter);
 
     }
     const getData = async () => {
         // тут вполняется запрос и поэтому рендерится все нужн просписать условие
         if (!elementsIsEnd) {
-            const resp = await fetch(`http://localhost:5000/users?_start=${start}&_end=${end}`);
+            const resp = await fetch(`http://localhost:5000/users?_start=${start}&_end=${end}&filter=${filter}`);
             const data = await resp.json();
             if (data.length) {
                 setRenderData(data);
@@ -74,19 +71,37 @@ export default function Table({ users }) {
             method: 'DELETE',
         });
         if (resp.ok) {
-            const resp = await fetch(`http://localhost:5000/users?_start=${start}&_end=${end}`);
+            const resp = await fetch(`http://localhost:5000/users?_start=${start}&_end=${end}&filter=${filter}`);
             const data = await resp.json();
             console.log(data)
             setRenderData(data);
         }
     }
-
+    const getFilteredItems = async () => { 
+        if (filter !== 'all') { 
+            const resp = await fetch('http://localhost:5000/users');
+            console.log(resp)
+            const data = await resp.json();
+            const filteredUsers = createFilteredUser(data);
+            setRenderData(filteredUsers)
+        }
+    } 
+    useEffect(() => { 
+        getFilteredItems();
+    },[filter,startOffset])
     useEffect(() => {
         if (filter === 'all') { 
             getData();
         }
     }, [startOffset])
-
+    function setFilterValue(e) { 
+        const value = e.currentTarget.value;
+        if (value.length) {
+            setFilter(value.toLowerCase())
+        } else {
+            setFilter('all');
+        }
+    }
     return (
         <section className={ `flex-row justify-center ${theme === 'light' ? 'bg-light' : 'bg-dark'} w-[1110px]` }>
             <div className="grow flex flex-row justify-between items-center py-[16px] px-[16px]">
@@ -113,6 +128,7 @@ export default function Table({ users }) {
                         entries
                     </span>
                     <input
+                        onChange={setFilterValue}
                         type="text"
                         placeholder="Search..."
                         className={ `${theme === 'light' ? 'bg-light border-button-grey bg-[url("/akar-icons_search-grey.svg")]' : 'bg-dark border-light text-light bg-[url("/akar-icons_search.svg")]'} border rounded-[8px] text-sm w-[176px] self-stretch pl-[33px] outline-0 bg-no-repeat bg-[9px_center]`}
