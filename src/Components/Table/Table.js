@@ -16,9 +16,9 @@ export default function Table({ users }) {
     const searchParams = useSearchParams();
     let startOffset = Number(searchParams.get('startOffset') ?? 0);
     let endOffset = Number(searchParams.get('endOffset') ?? 1);
-    const filterDefault = (searchParams.get('filter') ?? 'all').toLowerCase();
+    const filter = (searchParams.get('filter') ?? 'all').toLowerCase();
     
-    const [filter, setFilter] = useState(filterDefault);
+    // const [filter, setFilter] = useState(filter);
     console.log('filter',filter)
     const router = useRouter();
     console.log('render', startOffset, endOffset)
@@ -27,7 +27,7 @@ export default function Table({ users }) {
     const quantityElementToShow = 10;
     let start = startOffset * quantityElementToShow;
     let end = endOffset * quantityElementToShow;
-    const renderUserInfo = filterDefault === 'all' ? users.slice(start, end) : createFilteredUser(users);
+    const renderUserInfo = filter === 'all' ? users.slice(start, end) : createFilteredUser(users);
     const [renderData, setRenderData] = useState(renderUserInfo);
     console.log('renderData',renderData)
     function createFilteredUser(users) { 
@@ -54,14 +54,14 @@ export default function Table({ users }) {
     const getData = async () => {
         // тут вполняется запрос и поэтому рендерится все нужн просписать условие
         if (!elementsIsEnd) {
-            const resp = await fetch(`http://localhost:5000/users?_start=${start}&_end=${end}&filter=${filter}`);
+            const resp = await fetch(`http://localhost:5000/users?_start=${start}&_end=${end}`);
             const data = await resp.json();
             if (data.length) {
                 setRenderData(data);
                 return;
             }
             setElementsIsEnd(true);
-            router.push(`/?startOffset=${startOffset - 1 >= 0 ? startOffset - 1 : 0}&endOffset=${endOffset - 1 >= 1 ? endOffset - 1 : 1}`)
+            router.push(`/?startOffset=${startOffset - 1 >= 0 ? startOffset - 1 : 0}&endOffset=${endOffset - 1 >= 1 ? endOffset - 1 : 1}&filter=${filter}`)
         }
 
     }
@@ -71,7 +71,7 @@ export default function Table({ users }) {
             method: 'DELETE',
         });
         if (resp.ok) {
-            const resp = await fetch(`http://localhost:5000/users?_start=${start}&_end=${end}&filter=${filter}`);
+            const resp = await fetch(`http://localhost:5000/users?_start=${start}&_end=${end}`);
             const data = await resp.json();
             console.log(data)
             setRenderData(data);
@@ -95,11 +95,11 @@ export default function Table({ users }) {
         }
     }, [startOffset])
     function setFilterValue(e) { 
-        const value = e.currentTarget.value;
+        const value = e.currentTarget.value.toLowerCase();
         if (value.length) {
-            setFilter(value.toLowerCase())
+            router.push(`/?startOffset=${startOffset}&endOffset=${endOffset}&filter=${value}`)
         } else {
-            setFilter('all');
+            router.push(`/?startOffset=${startOffset}&endOffset=${endOffset}&filter=all`)
         }
     }
     return (
@@ -128,6 +128,7 @@ export default function Table({ users }) {
                         entries
                     </span>
                     <input
+                        value={filter === 'all' ? '' : filter}
                         onChange={setFilterValue}
                         type="text"
                         placeholder="Search..."
@@ -145,7 +146,7 @@ export default function Table({ users }) {
             </div>
 
             <div className="grow">
-                <table className="w-[100%] table-auto">
+                <table className="w-[100%] min-h-[740px] table-auto">
                     <thead>
                         <tr className={ `text-left text-base ${theme === 'light' ? 'text-black' : 'text-light'}` }>
                             <th className="text-center w-[136px] pl-[16px] pr-[0px] py-[16px]" scope="col">Tracking ID</th>
