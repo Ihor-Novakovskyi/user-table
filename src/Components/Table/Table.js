@@ -7,92 +7,20 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Rows from "./Rows/Rows";
 import Pagination from "@/Components/Table/PaginationButtons/paginationControls";
+import userDataHook from "../useDataHook";
 
 
 
 export default function Table({ users }) {
     const [theme, setTheme] = useState('dark');
-    const [elementsIsEnd, setElementsIsEnd] = useState(false);
-    const searchParams = useSearchParams();
-    let startOffset = Number(searchParams.get('startOffset') ?? 0);
-    let endOffset = Number(searchParams.get('endOffset') ?? 1);
-    const filter = (searchParams.get('filter') ?? 'all').toLowerCase();
-    const router = useRouter();
-
-    const quantityElementToShow = 10;
-    let start = startOffset * quantityElementToShow;
-    let end = endOffset * quantityElementToShow;
-    const renderUserInfo = filter === 'all' ? users.slice(start, end) : createFilteredUser(users);
-    const [renderData, setRenderData] = useState(renderUserInfo);
-    function createFilteredUser(users) { 
-        let filtered = users.filter(filterData);
-        if (filtered.length > start && filtered.length >= end) {
-            filtered = filtered.slice(start, end);
-        } else if (filtered.length > start) {
-            filtered = filtered.slice(start, filtered.length)
-        } else { 
-            if (startOffset >= 1) {
-                router.push(`/?startOffset=${startOffset - 1}&endOffset=${endOffset - 1}&filter=${filter}`);
-            }
-        }
-        return filtered;
-    }
-
-    function filterData(user) { 
-        const { "Customer": userName } = user;
-        const [firstName, secondName] = userName.split(' ');
-        return firstName.toLowerCase().startsWith(filter) || secondName.toLowerCase().startsWith(filter);
-
-    }
-    const getData = async () => {
-        // тут вполняется запрос и поэтому рендерится все нужн просписать условие
-        if (!elementsIsEnd) {
-            
-            const resp = await fetch(`http://localhost:5000/users?_start=${start}&_end=${end}`);
-            const data = await resp.json();
-            if (data.length) {
-                setRenderData(data);
-                return;
-            }
-            setElementsIsEnd(true);
-            router.push(`/?startOffset=${startOffset - 1 >= 0 ? startOffset - 1 : 0}&endOffset=${endOffset - 1 >= 1 ? endOffset - 1 : 1}&filter=${filter}`)
-        }
-
-    }
-    const deleteElement = async (id) => {
-        const resp = await fetch(`http://localhost:5000/users/${id}`, {
-            method: 'DELETE',
-        });
-        if (resp.ok) {
-            const resp = await fetch(`http://localhost:5000/users?_start=${start}&_end=${end}`);
-            const data = await resp.json();
-            setRenderData(data);
-        }
-    }
-    const getFilteredItems = async () => { 
-        if (filter !== 'all') { 
-            const resp = await fetch('http://localhost:5000/users');
-            const data = await resp.json();
-            const filteredUsers = createFilteredUser(data);
-            setRenderData(filteredUsers)
-        }
-    } 
-    useEffect(() => { 
-        getFilteredItems();
-    },[filter,startOffset])
-    useEffect(() => {
-        if (filter === 'all') { 
-            getData();
-        }
-    }, [startOffset])
-    function setFilterValue(e) { 
-        const value = e.currentTarget.value.toLowerCase();
-        if (value.length) {
-            router.push(`/?startOffset=${startOffset}&endOffset=${endOffset}&filter=${value}`)
-        } else {
-            router.push(`/?startOffset=${startOffset}&endOffset=${endOffset}&filter=all`)
-        }
-    }
+    const {
+        filter,
+        setFilterValue,
+        renderData,
+        deleteElement,
+        elementsIsEnd,
+        setElementsIsEnd,
+    } = userDataHook({ theme , users });
     return (
         <section className={ `${theme === 'light' ? 'bg-light' : 'bg-dark'} w-[1110px]` }>
             <div className="grow flex flex-row justify-between items-center py-[16px] px-[16px]">
@@ -140,7 +68,9 @@ export default function Table({ users }) {
                 <table className=" w-[100%] min-h-[740px] table-auto">
                     <thead>
                         <tr className={ `text-left text-base ${theme === 'light' ? 'text-black' : 'text-light'}` }>
-                            <th className="text-center w-[136px] pl-[16px] pr-[0px] py-[16px]" scope="col">Tracking ID</th>
+                            <th className="text-center w-[136px] pl-[16px] pr-[0px] py-[16px]" scope="col">
+                                Tracking ID
+                            </th>
                             <th className="py-[16px] pl-[16px] pr-[0px] " scope="col">
                                 <div className="flex justify-between items-center">
                                     <span>
