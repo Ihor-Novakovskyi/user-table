@@ -17,8 +17,6 @@ export default function Table({ users }) {
     let startOffset = Number(searchParams.get('startOffset') ?? 0);
     let endOffset = Number(searchParams.get('endOffset') ?? 1);
     const filter = (searchParams.get('filter') ?? 'all').toLowerCase();
-    
-    // const [filter, setFilter] = useState(filter);
     console.log('filter',filter)
     const router = useRouter();
     console.log('render', startOffset, endOffset)
@@ -54,6 +52,7 @@ export default function Table({ users }) {
     const getData = async () => {
         // тут вполняется запрос и поэтому рендерится все нужн просписать условие
         if (!elementsIsEnd) {
+            
             const resp = await fetch(`http://localhost:5000/users?_start=${start}&_end=${end}`);
             const data = await resp.json();
             if (data.length) {
@@ -103,7 +102,7 @@ export default function Table({ users }) {
         }
     }
     return (
-        <section className={ `flex-row justify-center ${theme === 'light' ? 'bg-light' : 'bg-dark'} w-[1110px]` }>
+        <section className={ `${theme === 'light' ? 'bg-light' : 'bg-dark'} w-[1110px]` }>
             <div className="grow flex flex-row justify-between items-center py-[16px] px-[16px]">
                 <div className="flex flex-row items-center gap-[12px]">
                     <span
@@ -145,8 +144,8 @@ export default function Table({ users }) {
                 </button>
             </div>
 
-            <div className="grow">
-                <table className="w-[100%] min-h-[740px] table-auto">
+            <div>
+                <table className=" w-[100%] min-h-[740px] table-auto">
                     <thead>
                         <tr className={ `text-left text-base ${theme === 'light' ? 'text-black' : 'text-light'}` }>
                             <th className="text-center w-[136px] pl-[16px] pr-[0px] py-[16px]" scope="col">Tracking ID</th>

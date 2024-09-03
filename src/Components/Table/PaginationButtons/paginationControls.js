@@ -11,12 +11,12 @@ export default function Pagination({ theme, isLimited, reloadLimit }) {
     const setSlide = (e) => { 
         const buttonValue = Number(e.currentTarget.children[0].innerText);
         if (buttonValue !== endOffset) { 
-            // isLimited ? reloadLimit(false) : void 0;
+            isLimited ? reloadLimit(false) : void 0;
             router.push(`/?startOffset=${buttonValue - 1}&endOffset=${buttonValue}&filter=${filter}`)
         }
     }
     const prevSlide = () => {
-        // isLimited ? reloadLimit(false) : void 0;
+        isLimited ? reloadLimit(false) : void 0;
         router.push(`/?startOffset=${startOffset - 1 >= 0 ? startOffset - 1 : 0}&endOffset=${endOffset - 1 >= 1 ? endOffset - 1 : 1}&filter=${filter}`)
     }
     const nextSlide = () => {

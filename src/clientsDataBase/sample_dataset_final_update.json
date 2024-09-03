@@ -111,16 +111,6 @@
       "Status": "Cancelled"
     },
     {
-      "id": "29415",
-      "Product Image": "https://picsum.photos/2000/3000",
-      "Product Name": "Fundamental mission-critical website",
-      "Customer": "Bianca Wagner",
-      "Date": "2023-09-24",
-      "Amount": 530.05,
-      "Payment Mode": "Paypal",
-      "Status": "Delivered"
-    },
-    {
       "id": "81389",
       "Product Image": "https://picsum.photos/2000/3000",
       "Product Name": "Front-line content-based initiative",
@@ -149,16 +139,6 @@
       "Amount": 370.82,
       "Payment Mode": "Cash on Delivery",
       "Status": "Cancelled"
-    },
-    {
-      "id": "66085",
-      "Product Image": "https://picsum.photos/2000/3000",
-      "Product Name": "Phased clear-thinking application",
-      "Customer": "Michelle Richards",
-      "Date": "2024-05-28",
-      "Amount": 642.65,
-      "Payment Mode": "Cash on Delivery",
-      "Status": "Process"
     },
     {
       "id": "37173",
@@ -2459,16 +2439,6 @@
       "Amount": 625.42,
       "Payment Mode": "Debit Card",
       "Status": "Delivered"
-    },
-    {
-      "id": "50554",
-      "Product Image": "https://picsum.photos/2000/3000",
-      "Product Name": "Business-focused tangible flexibility",
-      "Customer": "Kurt Anderson",
-      "Date": "2023-10-10",
-      "Amount": 104.22,
-      "Payment Mode": "Bank Transfer",
-      "Status": "Cancelled"
     },
     {
       "id": "78752",
