@@ -17,17 +17,13 @@ export default function Table({ users }) {
     let startOffset = Number(searchParams.get('startOffset') ?? 0);
     let endOffset = Number(searchParams.get('endOffset') ?? 1);
     const filter = (searchParams.get('filter') ?? 'all').toLowerCase();
-    console.log('filter',filter)
     const router = useRouter();
-    console.log('render', startOffset, endOffset)
 
-    console.log(startOffset, endOffset);    
     const quantityElementToShow = 10;
     let start = startOffset * quantityElementToShow;
     let end = endOffset * quantityElementToShow;
     const renderUserInfo = filter === 'all' ? users.slice(start, end) : createFilteredUser(users);
     const [renderData, setRenderData] = useState(renderUserInfo);
-    console.log('renderData',renderData)
     function createFilteredUser(users) { 
         let filtered = users.filter(filterData);
         if (filtered.length > start && filtered.length >= end) {
@@ -39,7 +35,6 @@ export default function Table({ users }) {
                 router.push(`/?startOffset=${startOffset - 1}&endOffset=${endOffset - 1}&filter=${filter}`);
             }
         }
-        console.log('filtered',filtered)
         return filtered;
     }
 
@@ -65,21 +60,18 @@ export default function Table({ users }) {
 
     }
     const deleteElement = async (id) => {
-        console.log(id)
         const resp = await fetch(`http://localhost:5000/users/${id}`, {
             method: 'DELETE',
         });
         if (resp.ok) {
             const resp = await fetch(`http://localhost:5000/users?_start=${start}&_end=${end}`);
             const data = await resp.json();
-            console.log(data)
             setRenderData(data);
         }
     }
     const getFilteredItems = async () => { 
         if (filter !== 'all') { 
             const resp = await fetch('http://localhost:5000/users');
-            console.log(resp)
             const data = await resp.json();
             const filteredUsers = createFilteredUser(data);
             setRenderData(filteredUsers)
