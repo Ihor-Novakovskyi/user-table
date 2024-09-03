@@ -7,19 +7,20 @@ export default function Pagination({ theme, isLimited, reloadLimit }) {
     const searchParams = useSearchParams();
     const startOffset = Number(searchParams.get('startOffset') ?? 0);
     const endOffset = Number(searchParams.get('endOffset') ?? 1);
+    const filter = searchParams.get('filter') ?? 'all';
     const setSlide = (e) => { 
         const buttonValue = Number(e.currentTarget.children[0].innerText);
         if (buttonValue !== endOffset) { 
-            isLimited ? reloadLimit(false) : void 0;
-            router.push(`/?startOffset=${buttonValue - 1}&endOffset=${buttonValue}`)
+            // isLimited ? reloadLimit(false) : void 0;
+            router.push(`/?startOffset=${buttonValue - 1}&endOffset=${buttonValue}&filter=${filter}`)
         }
     }
     const prevSlide = () => {
-        isLimited ? reloadLimit(false) : void 0;
-        router.push(`/?startOffset=${startOffset - 1 >= 0 ? startOffset - 1 : 0}&endOffset=${endOffset - 1 >= 1 ? endOffset - 1 : 1}`)
+        // isLimited ? reloadLimit(false) : void 0;
+        router.push(`/?startOffset=${startOffset - 1 >= 0 ? startOffset - 1 : 0}&endOffset=${endOffset - 1 >= 1 ? endOffset - 1 : 1}&filter=${filter}`)
     }
     const nextSlide = () => {
-        router.push(`/?startOffset=${startOffset + 1}&endOffset=${endOffset + 1}`)
+        router.push(`/?startOffset=${startOffset + 1}&endOffset=${endOffset + 1}&filter=${filter}`)
     }
     const buttonValueNumbers = setButtonPosition(endOffset);
     const [first, second, third] = buttonValueNumbers;

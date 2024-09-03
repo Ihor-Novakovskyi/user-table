@@ -2,7 +2,7 @@ import React from "react";
 export default function Rows({ users, theme, deleteItem }) {
     return (
         <>
-            { users.map((user) => Row(user, theme, deleteItem)) }
+            {users.length ? users.map((user) => Row(user, theme, deleteItem)): null }
         </>
     )
 }

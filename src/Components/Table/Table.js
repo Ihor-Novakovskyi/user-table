@@ -12,22 +12,50 @@ import Pagination from "@/Components/Table/PaginationButtons/paginationControls"
 
 export default function Table({ users }) {
     const [theme, setTheme] = useState('dark');
-    const [filter, setFilter] = useState('all')
     const [elementsIsEnd, setElementsIsEnd] = useState(false);
     const searchParams = useSearchParams();
-    const startOffset = Number(searchParams.get('startOffset') ?? 0);
-    const endOffset = Number(searchParams.get('endOffset') ?? 1);
+    let startOffset = Number(searchParams.get('startOffset') ?? 0);
+    let endOffset = Number(searchParams.get('endOffset') ?? 1);
+    const filterDefault = (searchParams.get('filter') ?? 'all').toLowerCase();
+    
+    const [filter, setFilter] = useState(filterDefault);
+    console.log(filter)
     const router = useRouter();
     console.log('render', startOffset, endOffset)
 
-    console.log(startOffset, endOffset);
+    console.log(startOffset, endOffset);    
     const quantityElementToShow = 10;
-    const start = startOffset * quantityElementToShow;
-    const end = endOffset * quantityElementToShow;
-    const renderUserInfo = users.slice(start, end);
+    let start = startOffset * quantityElementToShow;
+    let end = endOffset * quantityElementToShow;
+    const defaultData = filterDefault === 'all' ? users : users.filter(filterData);
+    let renderUserInfo = filterDefault === 'all' ? defaultData.slice(start, end) : defaultData;
+    if (filterDefault !== 'all') {
+        console.log('no all')
+        console.log(renderUserInfo.length > start, renderUserInfo.length >= end)
+        if (renderUserInfo.length > start && renderUserInfo.length >= end) {
+            console.log("renderUserInfo", renderUserInfo)
+            renderUserInfo = renderUserInfo.slice(start, end);
+        } else if (renderUserInfo.length > start) {
+            renderUserInfo = renderUserInfo.slice(start, renderUserInfo.length)
+            console.log(renderUserInfo);
+            // setElementsIsEnd(false);
+        } else { 
+            if (startOffset >= 1) {
+                router.push(`/?startOffset=${startOffset - 1}&endOffset=${endOffset - 1}&filter=${filter}`);
+            }
+        }
+    }
+    console.log()
     const [renderData, setRenderData] = useState(renderUserInfo)
+    function filterData(user) { 
+        const { "Customer": userName } = user;
+        const [firstName, secondName] = userName;
+        console.log(secondName.toLowerCase().startsWith(filter))
+        return firstName.toLowerCase().startsWith(filter) || secondName.toLowerCase().startsWith(filter);
 
+    }
     const getData = async () => {
+        // тут вполняется запрос и поэтому рендерится все нужн просписать условие
         if (!elementsIsEnd) {
             const resp = await fetch(`http://localhost:5000/users?_start=${start}&_end=${end}`);
             const data = await resp.json();
@@ -52,9 +80,11 @@ export default function Table({ users }) {
             setRenderData(data);
         }
     }
-    useEffect
+
     useEffect(() => {
-        getData();
+        if (filter === 'all') { 
+            getData();
+        }
     }, [startOffset])
 
     return (
