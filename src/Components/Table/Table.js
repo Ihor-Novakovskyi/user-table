@@ -11,6 +11,7 @@ import userDataHook from "../useDataHook";
 
 
 
+
 export default function Table({ users }) {
     const [theme, setTheme] = useState('dark');
     const {
@@ -18,21 +19,21 @@ export default function Table({ users }) {
         setFilterValue,
         renderData,
         deleteElement,
-        elementsIsEnd,
-        setElementsIsEnd,
-    } = userDataHook({ theme , users });
+        isLimited,
+        setLimited,
+    } = userDataHook({ theme, users });
     return (
         <section className={ `${theme === 'light' ? 'bg-light' : 'bg-dark'} w-[1110px]` }>
             <div className="grow flex flex-row justify-between items-center py-[16px] px-[16px]">
                 <div className="flex flex-row items-center gap-[12px]">
                     <span
-                        className={`text-sm ${theme === 'light' ? '' : 'text-light'}`}
+                        className={ `text-sm ${theme === 'light' ? '' : 'text-light'}` }
                     >
                         Show
                     </span>
-                    <div className={`flex flex-row px-[9px] h-[31px] gap-[4px] rounded-[8px] items-center ${theme === 'light' ? 'bg-button-grey' : 'bg-button-dark'}`}>
+                    <div className={ `flex flex-row px-[9px] h-[31px] gap-[4px] rounded-[8px] items-center ${theme === 'light' ? 'bg-button-grey' : 'bg-button-dark'}` }>
                         <span
-                            className={`text-sm ${theme  === 'light' ? '' : 'text-light'}`}
+                            className={ `text-sm ${theme === 'light' ? '' : 'text-light'}` }
                         >
                             10
                         </span>
@@ -42,26 +43,42 @@ export default function Table({ users }) {
                         />
                     </div>
                     <span
-                        className={`text-sm ${theme === 'light' ? '' : 'text-light'}`}
+                        className={ `text-sm ${theme === 'light' ? '' : 'text-light'}` }
                     >
                         entries
                     </span>
                     <input
-                        value={filter === 'all' ? '' : filter}
-                        onChange={setFilterValue}
+                        value={ filter === 'all' ? '' : filter }
+                        onChange={ setFilterValue }
                         type="text"
                         placeholder="Search..."
-                        className={ `${theme === 'light' ? 'bg-light border-button-grey bg-[url("/akar-icons_search-grey.svg")]' : 'bg-dark border-light text-light bg-[url("/akar-icons_search.svg")]'} border rounded-[8px] text-sm w-[176px] self-stretch pl-[33px] outline-0 bg-no-repeat bg-[9px_center]`}
+                        className={ `${theme === 'light' ? 'bg-light border-button-grey bg-[url("/akar-icons_search-grey.svg")]' : 'bg-dark border-light text-light bg-[url("/akar-icons_search.svg")]'} border rounded-[8px] text-sm w-[176px] self-stretch pl-[33px] outline-0 bg-no-repeat bg-[9px_center]` }
                     />
                 </div>
-                <button
-                    className="flex flex-row gap-[8px] items-center bg-active-button px-[12px] h-[32px] rounded-[8px]"
-                >
-                    <img src="./plus.svg" alt="plus button edit" />
-                    <span className="text-light text-sm font-semibold leading-normal"> 
-                        Add Customer
-                    </span>
-                </button>
+                <div
+                    className="flex flex-row items-center gap-[16px]">
+                    <img
+                        src={ `${theme === 'light' ?  './sun-svgrepo-black.svg':'./sun-svgrepo-com.svg' }` }
+                        alt=""
+                        className="w-[32px] h-[32px] cursor-pointer"
+                        onClick={ () => { 
+                            if (theme === 'light') {
+                                setTheme('dark')
+                            } else { 
+                                setTheme('light')
+                            }
+                        } }
+                    />
+                    <button
+                        className="flex flex-row gap-[8px] items-center bg-active-button px-[12px] h-[32px] rounded-[8px]"
+                    >
+                        <img src="./plus.svg" alt="plus button edit" />
+                        <span className="text-light text-sm font-semibold leading-normal">
+                            Add Customer
+                        </span>
+                    </button>
+                </div>
+
             </div>
 
             <div>
@@ -114,7 +131,7 @@ export default function Table({ users }) {
                 </table>
             </div>
             <div className="flex py-[16px] justify-center gap-[12px]">
-                <Pagination theme={ theme } isLimited={ elementsIsEnd } reloadLimit={ setElementsIsEnd } />
+                <Pagination theme={ theme } isLimited={ isLimited } reloadLimit={ setLimited } />
             </div>
         </section>
 

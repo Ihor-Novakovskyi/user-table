@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
 export default function userDataHook({users}) { 
-    const [elementsIsEnd, setElementsIsEnd] = useState(false);
+    const [isLimited, setLimited] = useState(false);
     const searchParams = useSearchParams();
     let startOffset = Number(searchParams.get('startOffset') ?? 0);
     let endOffset = Number(searchParams.get('endOffset') ?? 1);
@@ -30,14 +30,21 @@ export default function userDataHook({users}) {
             filtered = filtered.slice(start, end);
         } else if (filtered.length > start) {
             filtered = filtered.slice(start, filtered.length)
-        } else { 
-            if (startOffset >= 1) {
-                router.push(`/?startOffset=${startOffset - 1}&endOffset=${endOffset - 1}&filter=${filter}`);
-            }
         }
+        // } else { 
+        //     if (startOffset >= 1) {
+
+        //         router.push(`/?startOffset=${startOffset - 1}&endOffset=${endOffset - 1}&filter=${filter}`);
+        //     }
+        // }
         return filtered;
     }
-
+    // if (filter !== 'all' && !renderData.length && startOffset >= 1) { 
+    //     router.push(`/?startOffset=${startOffset - 1}&endOffset=${endOffset - 1}&filter=${filter}`);
+    // }
+    if (!renderData.length && startOffset >= 1) { 
+        router.push(`/?startOffset=${startOffset - 1}&endOffset=${endOffset - 1}&filter=${filter}`);
+    }
     function filterUsersByFilterValue(user) { 
         const { "Customer": userName } = user;
         const [firstName, secondName] = userName.split(' ');
@@ -45,18 +52,18 @@ export default function userDataHook({users}) {
 
     }
     const getAllUsersByOffset = async () => {
-        if (!elementsIsEnd) {            
+        if (!isLimited) {            
             const resp = await fetch(`http://localhost:5000/users?_start=${start}&_end=${end}`);
             const data = await resp.json();
             if (data.length) {
                 setRenderData(data);
                 if (data.length < quantityElementToShow) { 
-                    setElementsIsEnd(true);
+                    setLimited(true);
                 }
                 return;
             }
-            setElementsIsEnd(true);
-            router.push(`/?startOffset=${startOffset - 1 >= 0 ? startOffset - 1 : 0}&endOffset=${endOffset - 1 >= 1 ? endOffset - 1 : 1}&filter=${filter}`)
+            setLimited(true);
+            // router.push(`/?startOffset=${startOffset - 1 >= 0 ? startOffset - 1 : 0}&endOffset=${endOffset - 1 >= 1 ? endOffset - 1 : 1}&filter=${filter}`)
         }
 
     }
@@ -71,28 +78,34 @@ export default function userDataHook({users}) {
         }
     }
     const getFilteredItems = async () => { 
+        console.log('wrok')
         if (filter !== 'all') { 
             const resp = await fetch('http://localhost:5000/users');
             const data = await resp.json();
             const filteredUsers = createFilteredUserSlice(data);
             setRenderData(filteredUsers)
+            if (filteredUsers.length < quantityElementToShow) { 
+                setLimited(true);
+            }
         }
     } 
  
     function setFilterValue(e) { 
         const value = e.currentTarget.value.toLowerCase();
+        setLimited(false);
         if (value.length) {
-            router.push(`/?startOffset=${startOffset}&endOffset=${endOffset}&filter=${value}`)
+            router.push(`/?startOffset=0&endOffset=1&filter=${value}`)
         } else {
-            router.push(`/?startOffset=${startOffset}&endOffset=${endOffset}&filter=all`)
+            router.push(`/?startOffset=0&endOffset=1&filter=all`)
         }
     }
+    console.log('isLimited', isLimited)
     return {
         filter,
         setFilterValue,
         renderData,
         deleteElement,
-        elementsIsEnd,
-        setElementsIsEnd,
+        isLimited,
+        setLimited
     }
 }
