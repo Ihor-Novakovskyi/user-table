@@ -31,25 +31,15 @@ export default function userDataHook({ users }) {
         } else if (filtered.length > start) {
             filtered = filtered.slice(start, filtered.length)
         }
-        // } else { 
-        //     if (startOffset >= 1) {
-
-        //         router.push(`/?startOffset=${startOffset - 1}&endOffset=${endOffset - 1}&filter=${filter}`);
-        //     }
-        // }
         return filtered;
     }
-    // if (filter !== 'all' && !renderData.length && startOffset >= 1) { 
-    //     router.push(`/?startOffset=${startOffset - 1}&endOffset=${endOffset - 1}&filter=${filter}`);
-    // }
     if (!renderData.length && startOffset >= 1) {
         router.push(`/?startOffset=${startOffset - 1}&endOffset=${endOffset - 1}&filter=${filter}`);
     }
     function filterUsersByFilterValue(user) {
-        const { "Customer": userName } = user;
+        const { "Customer": userName, "Product Name": product } = user;
         const [firstName, secondName] = userName.split(' ');
-        return firstName.toLowerCase().startsWith(filter) || secondName.toLowerCase().startsWith(filter);
-
+        return product.toLowerCase().startsWith(filter) || firstName.toLowerCase().startsWith(filter) || secondName.toLowerCase().startsWith(filter);
     }
     const getAllUsersByOffset = async () => {
         if (!isLimited) {
@@ -63,7 +53,6 @@ export default function userDataHook({ users }) {
                 return;
             }
             setLimited(true);
-            // router.push(`/?startOffset=${startOffset - 1 >= 0 ? startOffset - 1 : 0}&endOffset=${endOffset - 1 >= 1 ? endOffset - 1 : 1}&filter=${filter}`)
         }
 
     }
